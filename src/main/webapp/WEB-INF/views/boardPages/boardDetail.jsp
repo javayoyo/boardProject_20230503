@@ -46,6 +46,15 @@
             <th>contents</th>
             <td>${board.boardContents}</td>
         </tr>
+        <c:if test="${board.fileAttached == 1}">
+        <tr>
+            <th>image</th>
+            <td>
+                <img src="${pageContext.request.contextPath}/upload/${boardFile.storedFileName}" alt="">
+<%--                ㄴ 현재 프로젝트 경로를 접근한다  --%>
+            </td>
+        </tr>
+        </c:if>
     </table>
     <button onclick="board_list()">목록</button>
     <button onclick="board_update()">수정</button>
