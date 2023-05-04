@@ -3,9 +3,15 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="Board">
-    <insert id="save" parameterType="board">
-        insert into board_table(boardWriter, boardPass, boardTitle, boardContents)
-        values (#{boardWriter}, #{boardPass}, #{boardTitle}, #{boardContents})
+    <insert id="save" parameterType="board" useGeneratedKeys="true" keyProperty="id">
+-- 아이디 값을 다시 가져오고 싶을때, use(자동생성되는값이 있는가),key(해당컬럼이름)
+        insert into board_table(boardWriter, boardPass, boardTitle, boardContents, fileAttached)
+        values (#{boardWriter}, #{boardPass}, #{boardTitle}, #{boardContents}, #{fileAttached})
+    </insert>
+
+    <insert id="saveFile" parameterType="boardFile">
+        insert into board_file_table(originalFileName,storedFileName, boardId)
+values (#{originalFileName},#{storedFileName}, #{boardId} )
     </insert>
 
     <select id="findAll" resultType="board">
