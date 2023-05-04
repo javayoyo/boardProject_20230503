@@ -60,7 +60,19 @@ public class BoardController {
         return "boardPages/boardDetail";
     }
 
-}
+    @GetMapping("/delete-check")
+    public String deleteCheck(@RequestParam("id") Long id, Model model) {
+        BoardDTO boardDTO = boardService.findById(id);
+        model.addAttribute("board", boardDTO);
+        return "boardPages/deleteCheck";
+    }
 
+    @GetMapping("/delete")
+    public String delete(@RequestParam("id") Long id) {
+        boardService.delete(id);
+        return "redirect:/board/";
+    }
+
+}
 
 
