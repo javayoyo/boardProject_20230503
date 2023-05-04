@@ -20,4 +20,16 @@ public class BoardService {
     public List<BoardDTO> findAll() {
         return boardRepository.findAll();
     }
+
+    public void updateHits(Long id) {
+        boardRepository.updateHits(id);
+    }
+
+    public BoardDTO findById(Long id) {
+        return boardRepository.fidById(id);
+    }
+
+    public void update(BoardDTO boardDTO) {
+        boardRepository.update(boardDTO);
+    }
 }
