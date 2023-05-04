@@ -50,8 +50,10 @@
         <tr>
             <th>image</th>
             <td>
-                <img src="${pageContext.request.contextPath}/upload/${boardFile.storedFileName}" alt="">
+                <c:forEach items="${boardFileList}" var="boardFile">
+                <img src="${pageContext.request.contextPath}/upload/${boardFile.storedFileName}" alt="" width="100" height="100">
 <%--                ㄴ 현재 프로젝트 경로를 접근한다  --%>
+                </c:forEach>
             </td>
         </tr>
         </c:if>
