@@ -2,6 +2,7 @@ package com.icia.board.service;
 
 import com.icia.board.dto.BoardDTO;
 import com.icia.board.dto.BoardFileDTO;
+import com.icia.board.dto.PageDTO;
 import com.icia.board.repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,7 +10,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -85,8 +88,41 @@ public class BoardService {
     public void delete(Long id) {
         boardRepository.delete(id);
     }
-
     public List<BoardFileDTO> findFile(Long id) {
         return boardRepository.findFile(id);
+    }
+
+    public List<BoardDTO> pagingList(int page) {
+        int pageLimit = 3; // 한 페이지에 보여줄 글 갯수
+        int pagingStart = (page-1) * pageLimit;
+        Map<String, Integer> PagingParams = new HashMap<>();
+        PagingParams.put("start", pagingStart);
+        PagingParams.put("limit", pageLimit);
+        List<BoardDTO> boardDTOList = boardRepository.pagingList(PagingParams);
+        return boardDTOList;
+    }
+    public PageDTO pagingParam(int page) {
+        int pageLimit = 3; // 한페이지에 보여줄 글 갯수
+        int blockLimit = 3; // 하단에 보여줄 페이지 번호 갯수(하단 목록 갯수)
+        // 전체 글 갯수 조회
+        int boardCount = boardRepository.boardCount();
+        // 전체 페이지 갯수 계산 > math.ceil 올림처리
+        int maxPage = (int) (Math.ceil((double)boardCount /pageLimit));
+        // 시작 페이지 값 계산 ( 1,4,7,10 ~~~ )
+        int startPage = (((int)(Math.ceil((double) page / blockLimit))) - 1) * blockLimit + 1;
+        // 마지막 페이지 값 계산 ( 3,6,9,12 ~~ )
+        int endPage = startPage + blockLimit -1;
+        // 전체 페이지 갯수가 계산한 endPage 보다 작을 때는 endPage 값을 maxPage 값과 같게 세팅
+        if(endPage > maxPage) {
+            endPage = maxPage;
+        }
+
+        PageDTO pageDTO = new PageDTO();
+        pageDTO.setPage(page);
+        pageDTO.setMaxPage(maxPage);
+        pageDTO.setEndPage(endPage);
+        pageDTO.setStartPage(startPage);
+        return pageDTO;
+
     }
 }
