@@ -141,8 +141,12 @@
             }
         });
     }
+    // 검색 > 1이외의 페이지 숫자 선택 > 상세 후 목록 조회 > 해당 선택한 페이징 그대로 유지
     const board_list = () => {
-        location.href = "/board/";
+        const type = '${type}';
+        const q = '${q}';
+        const page = '${page}';
+        location.href = "/board/paging?page=" + page + "&type=" + type +  "&q=" + q;
     }
     const board_update = () => {
         const id = '${board.id}';

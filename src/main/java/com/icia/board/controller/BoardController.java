@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
@@ -43,25 +44,59 @@ public class BoardController {
         return "boardPages/boardList";
     }
 
+//    ㄱ 검색과 페이징 기능을 일부 합쳐 놓음  / 검색어 q ㄱ
     @GetMapping("/paging")
-    public String paging(@RequestParam(value = "page", required = false,defaultValue = "1")int page, Model model) {
-        System.out.println("page = " + page);
-        // 사용자가 요청한 페이지에 해당하는 글 목록 데이터
-        List<BoardDTO> boardDTOList = boardService.pagingList(page);
-        System.out.println("boardDTOList = " + boardDTOList);
-        // 하단에 보여줄 페이지 번호 목록 데이터 (현재 하단의 숫자 목록 갯수)
-        PageDTO pageDTO = boardService.pagingParam(page);
+    public String paging(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
+                         @RequestParam(value = "q", required = false, defaultValue = "") String q,
+                         @RequestParam(value = "type", required = false, defaultValue = "boardTitle") String type,
+                         Model model) {
+        System.out.println("page = " + page + ", q = " + q);
+        List<BoardDTO> boardDTOList = null;
+        PageDTO pageDTO = null;
+//        검색어가 없으면 일반페이징처리, 해당하면 해당건에 대한 페이징처리
+        if (q.equals("")) {
+            // 사용자가 요청한 페이지에 해당하는 글 목록 데이터
+            boardDTOList = boardService.pagingList(page);
+            // 하단에 보여줄 페이지 번호 목록 데이터  (현재 하단의 숫자 목록 갯수)
+            pageDTO = boardService.pagingParam(page);
+        } else {
+            boardDTOList = boardService.searchList(page, type, q);
+            pageDTO = boardService.pagingSearchParam(page, type, q);
+        }
         model.addAttribute("boardList", boardDTOList);
         model.addAttribute("paging", pageDTO);
+        model.addAttribute("q", q);
+        model.addAttribute("type", type);
         return "boardPages/boardPaging";
     }
 
+
+//    @GetMapping("/search")
+//    public String search(@RequestParam("q") String q, @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+//                         Model model) {
+//        List<BoardDTO> boardDTOList = boardService.searchList(q, page);
+//        PageDTO pageDTO = boardService.pagingSearchParam(page, q);
+//        model.addAttribute("boardList", boardDTOList);
+//        model.addAttribute("paging", pageDTO);
+//        model.addAttribute("q",q);
+//        return "boardPages/boardPaging";
+//    }
+
     // /board?id=1
     @GetMapping
-    public String findById(@RequestParam("id") Long id, Model model) {
-        boardService.updateHits(id);
+    public String findById(@RequestParam("id") Long id, Model model,
+        @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+        @RequestParam(value = "q", required = false, defaultValue = "") String q,
+        @RequestParam(value = "type", required = false, defaultValue = "boardTitle") String type)
+    {
+                           boardService.updateHits(id);
         BoardDTO boardDTO = boardService.findById(id);
         model.addAttribute("board", boardDTO);
+        model.addAttribute("page",page);
+        model.addAttribute("q",q);
+        model.addAttribute("type",type);
+
+
         if (boardDTO.getFileAttached() == 1) {
             List<BoardFileDTO> boardFileDTO = boardService.findFile(id);
             model.addAttribute("boardFileList", boardFileDTO);

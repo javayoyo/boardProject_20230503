@@ -19,7 +19,6 @@ public class BoardRepository {
         sql.insert("Board.save", boardDTO);
         System.out.println("insert 후 boardDTO = " + boardDTO);
         return boardDTO;
-
     }
 
     public List<BoardDTO> findAll() {
@@ -47,7 +46,7 @@ public class BoardRepository {
     }
 
     public List<BoardFileDTO> findFile(Long boardId) {
-        return sql.selectList("Board.findFile" , boardId);
+        return sql.selectList("Board.findFile", boardId);
     }
 
     public List<BoardDTO> pagingList(Map<String, Integer> pagingParams) {
@@ -56,5 +55,14 @@ public class BoardRepository {
 
     public int boardCount() {
         return sql.selectOne("Board.count");
+    }
+
+    public List<BoardDTO> searchList(Map<String, Object> pagingParams) {
+        return sql.selectList("Board.search", pagingParams);
+    }
+
+    public int boardSearchCount(Map<String, Object> pagingParams) {
+        return sql.selectOne("Board.searchCount", pagingParams);
+
     }
 }
